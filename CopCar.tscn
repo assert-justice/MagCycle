@@ -1,0 +1,52 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://sprites/cop_car.png" type="Texture" id=1]
+[ext_resource path="res://sprites/gun.png" type="Texture" id=2]
+[ext_resource path="res://scripts/CopCar.gd" type="Script" id=3]
+
+[sub_resource type="AtlasTexture" id=2]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 0, 0, 256, 256 )
+
+[sub_resource type="AtlasTexture" id=3]
+flags = 4
+atlas = ExtResource( 1 )
+region = Rect2( 256, 0, 256, 256 )
+
+[sub_resource type="SpriteFrames" id=4]
+animations = [ {
+"frames": [ SubResource( 2 ), SubResource( 3 ) ],
+"loop": true,
+"name": "default",
+"speed": 2.0
+} ]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 84, 35 )
+
+[node name="CopCar" type="Area2D"]
+position = Vector2( 0, -26 )
+scale = Vector2( 0.5, 0.5 )
+z_index = 1
+script = ExtResource( 3 )
+
+[node name="Wiggle" type="Node2D" parent="."]
+
+[node name="AnimatedSprite" type="AnimatedSprite" parent="Wiggle"]
+scale = Vector2( 0.7, 0.7 )
+frames = SubResource( 4 )
+playing = true
+
+[node name="Gun" type="Node2D" parent="Wiggle"]
+position = Vector2( 4, -6 )
+
+[node name="gun" type="Sprite" parent="Wiggle/Gun"]
+position = Vector2( 24, -4 )
+rotation = 1.57366
+texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2( -2, 39 )
+z_index = 2
+shape = SubResource( 1 )

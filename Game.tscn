@@ -1,0 +1,37 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://CopCar.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://sprites/rail.png" type="Texture" id=3]
+
+[node name="Node2D" type="Node2D"]
+position = Vector2( -7, 1 )
+
+[node name="Player" parent="." instance=ExtResource( 2 )]
+position = Vector2( 470, 68 )
+z_index = 2
+
+[node name="Rails" type="Node" parent="."]
+
+[node name="Sprite" type="Sprite" parent="Rails"]
+position = Vector2( 500, 150 )
+scale = Vector2( 32.875, 0.5 )
+texture = ExtResource( 3 )
+
+[node name="Sprite2" type="Sprite" parent="Rails"]
+position = Vector2( 500, 250 )
+scale = Vector2( 32.875, 0.5 )
+texture = ExtResource( 3 )
+
+[node name="Sprite3" type="Sprite" parent="Rails"]
+position = Vector2( 500, 350 )
+scale = Vector2( 32.875, 0.5 )
+texture = ExtResource( 3 )
+
+[node name="Sprite4" type="Sprite" parent="Rails"]
+position = Vector2( 500, 450 )
+scale = Vector2( 32.875, 0.5 )
+texture = ExtResource( 3 )
+
+[node name="CopCar" parent="." instance=ExtResource( 1 )]
+position = Vector2( 739, 324 )
