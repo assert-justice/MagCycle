@@ -6,6 +6,7 @@ export var gravity_power = 30
 export var jump_time = 0.3
 export var num_bullets = 10
 export var bullet_spacing = 100
+export var shoot_slowdown = 0.4
 var jump_clock = 0
 var velocity = Vector2()
 var aim = Vector2()
@@ -27,7 +28,7 @@ func handle_movement(delta):
 	else:
 		stick_x -= deadzone
 	stick_x *= 1 / (1 - deadzone)
-	velocity.x = stick_x * speed
+	
 	aim.x = 0
 	aim.y = 0
 	aim.x -= Input.get_action_strength("shoot_left")
@@ -47,6 +48,7 @@ func handle_movement(delta):
 	self.position += velocity * delta
 	$Gun/BulletMount.visible = aim.length() > deadzone
 	if aim.length() > deadzone:
+		stick_x *= shoot_slowdown
 		$Gun.rotation = aim.angle()
 		if offset_clock > offset_time / 2:
 			$Gun/BulletMount.position.x = bullet_spacing #aim.normalized() * bullet_spacing * 0.5
@@ -55,6 +57,7 @@ func handle_movement(delta):
 		offset_clock -= 1
 		if offset_clock < 0:
 			offset_clock = offset_time
+	velocity.x = stick_x * speed
 
 func _ready():
 	bullets = []
