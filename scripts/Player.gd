@@ -18,6 +18,13 @@ var bullet_scene = null
 var bullets = null
 var offset_time = 16
 var offset_clock = 0
+var space_state = null
+
+func shoot():
+	space_state = get_world_2d().direct_space_state
+	var test = space_state.intersect_ray(self.position, aim.normalized() * 5000, [self])
+	if len(test) > 0:
+		test.collider.emit_signal("damage", 1, aim.normalized(), test.position)
 
 func handle_movement(delta):
 	var stick_x = Input.get_action_strength("right") - Input.get_action_strength("left")
@@ -48,7 +55,10 @@ func handle_movement(delta):
 	self.position += velocity * delta
 	$Gun/BulletMount.visible = aim.length() > deadzone
 	if aim.length() > deadzone:
-		stick_x *= shoot_slowdown
+		if not $ShootSound.playing:
+			$ShootSound.play()
+		shoot()
+		#stick_x *= shoot_slowdown
 		$Gun.rotation = aim.angle()
 		if offset_clock > offset_time / 2:
 			$Gun/BulletMount.position.x = bullet_spacing #aim.normalized() * bullet_spacing * 0.5
@@ -62,10 +72,9 @@ func handle_movement(delta):
 func _ready():
 	bullets = []
 	bullet_scene = load(bullet_path)
-	for i in range(10):
+	for i in range(50):
 		var bullet = bullet_scene.instance()
 		$Gun/BulletMount.add_child(bullet)
-		#$Gun/BulletMount.visible = false
 		bullet.position.x = (i + 0.5) * bullet_spacing
 		bullets.append(bullet)
 

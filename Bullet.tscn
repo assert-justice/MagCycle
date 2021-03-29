@@ -1,9 +1,18 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://sprites/good_bullet.png" type="Texture" id=2]
 
-[node name="Bullet" type="Node2D"]
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 14.8241, 5.479 )
+
+[node name="Bullet" type="Area2D"]
 z_index = 1
 
 [node name="good_bullet" type="Sprite" parent="."]
 texture = ExtResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." groups=[
+"good_bullet",
+]]
+position = Vector2( 0, -0.530331 )
+shape = SubResource( 1 )

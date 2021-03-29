@@ -30,3 +30,8 @@ texture = ExtResource( 1 )
 
 [node name="BulletMount" type="Node2D" parent="Gun"]
 scale = Vector2( 2, 2 )
+
+[node name="ShootSound" type="AudioStreamPlayer2D" parent="."]
+volume_db = 24.0
+pitch_scale = 0.5
+attenuation = 0.450625

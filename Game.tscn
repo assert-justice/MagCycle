@@ -9,29 +9,31 @@ position = Vector2( -7, 1 )
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 470, 68 )
+scale = Vector2( 0.25, 0.25 )
 z_index = 2
 
 [node name="Rails" type="Node" parent="."]
 
 [node name="Sprite" type="Sprite" parent="Rails"]
 position = Vector2( 500, 150 )
-scale = Vector2( 32.875, 0.5 )
+scale = Vector2( 32.875, 0.25 )
 texture = ExtResource( 3 )
 
 [node name="Sprite2" type="Sprite" parent="Rails"]
 position = Vector2( 500, 250 )
-scale = Vector2( 32.875, 0.5 )
+scale = Vector2( 32.875, 0.25 )
 texture = ExtResource( 3 )
 
 [node name="Sprite3" type="Sprite" parent="Rails"]
 position = Vector2( 500, 350 )
-scale = Vector2( 32.875, 0.5 )
+scale = Vector2( 32.875, 0.25 )
 texture = ExtResource( 3 )
 
 [node name="Sprite4" type="Sprite" parent="Rails"]
 position = Vector2( 500, 450 )
-scale = Vector2( 32.875, 0.5 )
+scale = Vector2( 32.875, 0.25 )
 texture = ExtResource( 3 )
 
 [node name="CopCar" parent="." instance=ExtResource( 1 )]
 position = Vector2( 739, 324 )
+scale = Vector2( 0.25, 0.25 )
