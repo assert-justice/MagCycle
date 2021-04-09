@@ -7,8 +7,9 @@ export var wiggle_time = 0.1
 export var wiggle_distance = 30
 export var wiggle_speed = 1000
 export var health = 1
+export var alive = true
 var wiggle_clock = -1
-var velocity = 0
+var velocity = Vector2()
 var bullet_path = 'res://BadBullet.tscn'
 var bullet_scene = null
 var fire_clock = 0
@@ -16,8 +17,10 @@ var player = null
 var wiggle_pos = Vector2()
 var wiggle_ang = 0
 var damage_val = 0
+var gravity = 30
 
 signal damage(value, direction, pos)
+signal set_pos(pos)
 
 func _ready():
 	player = get_tree().get_nodes_in_group("player")[0]
@@ -25,20 +28,20 @@ func _ready():
 
 func _physics_process(delta):
 	if health < 0:
-		$ExplodeParticles.emitting = true
-		var eparts = $ExplodeParticles
-		remove_child(eparts)
-		eparts.scale = scale
-		eparts.position = position
-		get_parent().add_child(eparts)
+		if position.y > 650:
+			queue_free()
+		velocity.y += gravity
+		position += delta * velocity
+	if position.y > 600:
 		queue_free()
+	if player == null:
 		return
 	$Wiggle/Gun.rotation = (player.position - self.position).angle()
 	fire_clock -= delta
 	var dx = (player.position.x - self.position.x) * 30
-	velocity += dx
-	velocity = clamp(velocity, -speed, speed) * delta
-	self.position.x += velocity
+	velocity.x += dx
+	velocity.x = clamp(velocity.x, -speed, speed) * delta
+	self.position.x += velocity.x
 	if fire_clock < 0:
 		fire_clock = fire_time
 		var bullet = bullet_scene.instance()
@@ -70,6 +73,13 @@ func _physics_process(delta):
 
 func _on_CopCar_damage(value, direction, pos):
 	damage_val = value
+	if health < 0:
+		alive = false
+		velocity.y -= 10
 	wiggle_clock = wiggle_time
 	$DamageParticles.direction = direction
 	
+
+
+func _on_CopCar_set_pos(pos):
+	position = pos
