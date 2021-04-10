@@ -13,12 +13,14 @@ var cars_destroyed = 0
 var scene_path = 'res://Scene.tscn'
 var game_scene = null
 var game = null
+var tapper = true
+var started = false
 
 func _ready():
 	cop_cars = []
 	cop_car_scene = load(cop_car_path)
 	game_scene = load(scene_path)
-	load_scene()
+	#load_scene()
 
 func wave():
 	wave_time = rand_range(min_wave_time, max_wave_time)
@@ -43,12 +45,15 @@ func load_scene():
 	game = game_scene.instance()
 	add_child(game)
 	chunks = []
+	$Scene/Player.tapper = tapper
 	for i in range($Scene/Player.max_health):
 		var chunk = $Scene/HealthChunk.duplicate()
 		chunk.position.x = $Scene/HealthChunk.position.x * (i + 1)
 		$Scene.add_child(chunk)
 		chunks.append(chunk)
 	$Scene/HealthChunk.visible = false
+	if not tapper:
+		$Scene/Rails.set_rails("1100011")
 	wave()
 
 func reload_scene():
@@ -58,7 +63,24 @@ func reload_scene():
 	load_scene()
 
 func _process(_delta):
+	if not started:
+		if Input.is_action_just_pressed("ui_accept"):
+			started = true
+			$RichTextLabel.queue_free()
+			load_scene()
+		elif Input.is_action_just_pressed("ui_cancel"):
+			started = true
+			tapper = false
+			$RichTextLabel.queue_free()
+			load_scene()
+		return
 	if Input.is_action_just_pressed("reset"):
+		reload_scene()
+	if Input.is_action_just_pressed("ui_accept"):
+		tapper = true
+		reload_scene()
+	if Input.is_action_just_pressed("ui_cancel"):
+		tapper = false
 		reload_scene()
 	if $Scene/Player == null:
 		return

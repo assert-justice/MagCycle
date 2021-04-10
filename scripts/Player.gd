@@ -12,6 +12,7 @@ export var flash_cycle = 0.25
 export var flash_thresh = 0.5
 export var max_health = 3
 export var health = 0
+export var tapper = true
 var flash_clock = -1
 var jump_clock = 0
 var velocity = Vector2()
@@ -25,6 +26,7 @@ var bullets = null
 var offset_time = 16
 var offset_clock = 0
 var space_state = null
+var current_rail = 0
 
 signal damage(value)
 
@@ -50,17 +52,31 @@ func handle_movement(delta):
 	aim.x += Input.get_action_strength("shoot_right")
 	aim.y -= Input.get_action_strength("shoot_up")
 	aim.y += Input.get_action_strength("shoot_down")
-	velocity.y += gravity_power
-	if (not Input.is_action_pressed("fall")) and (not velocity.y < 0):
-		if rails == null:
-			rails = get_tree().get_nodes_in_group("Rails")[0].rails
-		for rail in rails:
-			if abs(self.position.y - rail.y) < clamp_distance:
-				self.position.y = rail.y
-				velocity.y = 0
-				break
-	if Input.is_action_just_pressed("jump"):
-		velocity.y -= jump_power
+	
+	rails = get_tree().get_nodes_in_group("Rails")[0].rails
+	if tapper:
+		if Input.is_action_just_pressed("fall"):
+			current_rail += 1
+		if Input.is_action_just_pressed("jump"):
+			current_rail -= 1
+		current_rail = clamp(current_rail, 0, 6)
+		position.y = rails[current_rail].y
+	else:
+		velocity.y += gravity_power
+		if (not Input.is_action_pressed("fall")) and (not velocity.y < 0):
+			if rails == null:
+				rails = get_tree().get_nodes_in_group("Rails")[0].rails
+			for rail in rails:
+				if abs(self.position.y - rail.y) < clamp_distance:
+					self.position.y = rail.y
+					velocity.y = 0
+					break
+		if Input.is_action_just_pressed("jump"):
+			velocity.y -= jump_power
+			if velocity.y > -jump_power:
+				velocity.y = -jump_power
+				
+	
 	
 	self.position += velocity * delta
 	$Gun/BulletMount.visible = aim.length() > deadzone

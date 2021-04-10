@@ -1,6 +1,7 @@
 extends Node2D
 
 export (Array, Vector2) var rails = null
+export var default_rails = "1111111"
 
 func set_rails(pattern):
 	rails.clear()
@@ -15,4 +16,4 @@ func set_rails(pattern):
 
 func _ready():
 	rails = []
-	set_rails("1100011")
+	set_rails(default_rails)
