@@ -2,12 +2,12 @@
 
 importer="wav"
 type="AudioStreamSample"
-path="res://.import/motor_1.wav-534094416fbbbf1e3a934f37dfb02c16.sample"
+path="res://.import/odd.wav-53cc948a672119b4b5e69cf90857f56f.sample"
 
 [deps]
 
-source_file="res://sfx/motor_1.wav"
-dest_files=[ "res://.import/motor_1.wav-534094416fbbbf1e3a934f37dfb02c16.sample" ]
+source_file="res://sound_effects/sound_effects/odd.wav"
+dest_files=[ "res://.import/odd.wav-53cc948a672119b4b5e69cf90857f56f.sample" ]
 
 [params]
 

@@ -6,7 +6,9 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 14.818, 5.7556 )
 
-[node name="Bullet" type="Area2D"]
+[node name="Bullet" type="Area2D" groups=[
+"jumpable",
+]]
 z_index = 1
 script = ExtResource( 1 )
 

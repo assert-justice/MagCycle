@@ -5,14 +5,3 @@
 [node name="Game" type="Node2D"]
 position = Vector2( -7, 1 )
 script = ExtResource( 5 )
-
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-margin_left = 16.0
-margin_top = 7.0
-margin_right = 293.0
-margin_bottom = 106.0
-text = "Press \"A\" to launch in normal mode
-Press \"B\" to launch in alternate mode"
-__meta__ = {
-"_edit_use_anchors_": false
-}

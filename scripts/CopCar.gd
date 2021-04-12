@@ -25,16 +25,18 @@ signal set_pos(pos)
 func _ready():
 	player = get_tree().get_nodes_in_group("player")[0]
 	bullet_scene = load(bullet_path)
+	fire_clock = randf() * fire_time
 
 func _physics_process(delta):
+	if position.y > 600:
+		queue_free()
+	if player == null:
+		return
 	if health < 0:
 		if position.y > 650:
 			queue_free()
 		velocity.y += gravity
 		position += delta * velocity
-	if position.y > 600:
-		queue_free()
-	if player == null:
 		return
 	$Wiggle/Gun.rotation = (player.position - self.position).angle()
 	fire_clock -= delta
@@ -48,6 +50,7 @@ func _physics_process(delta):
 		self.get_parent().add_child(bullet)
 		bullet.position = self.position + $Wiggle/Gun.position
 		bullet.velocity = (player.position - self.position).normalized() * bullet_speed
+		$ShootSound.play()
 	var sensitivity = 10
 	if not wiggle_clock < 0:
 		wiggle_clock -= delta
@@ -76,6 +79,11 @@ func _on_CopCar_damage(value, direction, pos):
 	if health < 0:
 		alive = false
 		velocity.y -= 10
+		if $DieSound != null:
+			$DieSound.play()
+			var sound = $DieSound
+			remove_child(sound)
+			get_parent().add_child(sound)
 	wiggle_clock = wiggle_time
 	$DamageParticles.direction = direction
 	

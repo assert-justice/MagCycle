@@ -12,7 +12,6 @@ export var flash_cycle = 0.25
 export var flash_thresh = 0.5
 export var max_health = 3
 export var health = 0
-export var tapper = true
 var flash_clock = -1
 var jump_clock = 0
 var velocity = Vector2()
@@ -27,6 +26,10 @@ var offset_time = 16
 var offset_clock = 0
 var space_state = null
 var current_rail = 0
+var jumpable = null
+
+var pitches = [2.25, 2, 1.75, 1.5]
+var current_pitch = 0
 
 signal damage(value)
 
@@ -54,35 +57,41 @@ func handle_movement(delta):
 	aim.y += Input.get_action_strength("shoot_down")
 	
 	rails = get_tree().get_nodes_in_group("Rails")[0].rails
-	if tapper:
-		if Input.is_action_just_pressed("fall"):
-			current_rail += 1
-		if Input.is_action_just_pressed("jump"):
-			current_rail -= 1
-		current_rail = clamp(current_rail, 0, 6)
-		position.y = rails[current_rail].y
-	else:
-		velocity.y += gravity_power
-		if (not Input.is_action_pressed("fall")) and (not velocity.y < 0):
-			if rails == null:
-				rails = get_tree().get_nodes_in_group("Rails")[0].rails
-			for rail in rails:
-				if abs(self.position.y - rail.y) < clamp_distance:
-					self.position.y = rail.y
-					velocity.y = 0
-					break
-		if Input.is_action_just_pressed("jump"):
-			velocity.y -= jump_power
-			if velocity.y > -jump_power:
-				velocity.y = -jump_power
-				
 	
+	velocity.y += gravity_power
+	var rail_dis = INF
+	if (not Input.is_action_pressed("fall")) and (not velocity.y < 0):
+		if rails == null:
+			rails = get_tree().get_nodes_in_group("Rails")[0].rails
+		for rail in rails:
+			var dis = abs(self.position.y - rail.y)
+			if dis < rail_dis:
+				rail_dis = dis
+			if dis < clamp_distance:
+				self.position.y = rail.y
+				velocity.y = 0
+				break
+	if Input.is_action_just_pressed("jump") and (len(jumpable) > 0 or rail_dis < 50):
+		velocity.y -= jump_power
+		if velocity.y > -jump_power:
+			velocity.y = -jump_power
+	if position.y < 0 and velocity.y < 0:
+		velocity.y = - velocity.y
+	if len(jumpable) > 0:
+		var closest = jumpable[0]
+		for j in jumpable:
+			if (position - j.position).length() < (position - closest.position).length():
+				closest = j
+		$CanJumpParticles.rotation = (closest.position - position).angle()
 	
-	self.position += velocity * delta
 	$Gun/BulletMount.visible = aim.length() > deadzone
 	if aim.length() > deadzone:
 		if not $ShootSound.playing:
 			$ShootSound.play()
+			$ShootSound.pitch_scale = pitches[current_pitch]
+			current_pitch += 1
+			if len(pitches) == current_pitch:
+				current_pitch = 0
 		shoot()
 		#stick_x *= shoot_slowdown
 		$Gun.rotation = aim.angle()
@@ -93,11 +102,15 @@ func handle_movement(delta):
 		offset_clock -= 1
 		if offset_clock < 0:
 			offset_clock = offset_time
+	else:
+		$ShootSound.stop()
 	velocity.x = stick_x * speed
+	self.position += velocity * delta
 
 func _ready():
 	health = max_health
 	bullets = []
+	jumpable = []
 	bullet_scene = load(bullet_path)
 	for i in range(50):
 		var bullet = bullet_scene.instance()
@@ -111,6 +124,10 @@ func _physics_process(delta):
 		position += velocity * delta
 		return
 	if position.y > 650:
+		$DeathSound.play()
+		var sound = $DeathSound
+		remove_child(sound)
+		get_parent().add_child(sound)
 		queue_free()
 	handle_movement(delta)
 	position.x = clamp(position.x, 0, 1030)
@@ -126,4 +143,22 @@ func _on_Player_damage(value):
 		health -= value
 		if health < 0:
 			$DeathParticles.emitting = true
+			$DeathSound.play()
+		else:
+			$DamageSound.play()
 		flash_clock = flash_time
+
+
+func _on_JumpRadius_area_entered(area):
+	if area.is_in_group("jumpable"):
+		jumpable.append(area)
+		$CanJumpParticles.emitting = true
+	pass # Replace with function body.
+
+
+func _on_JumpRadius_area_exited(area):
+	if area in jumpable:
+		jumpable.erase(area)
+		if len(jumpable) == 0:
+			$CanJumpParticles.emitting = false
+	pass # Replace with function body.
