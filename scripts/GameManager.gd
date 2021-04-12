@@ -14,12 +14,32 @@ var scene_path = 'res://Scene.tscn'
 var game_scene = null
 var game = null
 var started = false
+var player = null
 
 func _ready():
 	cop_cars = []
 	cop_car_scene = load(cop_car_path)
 	game_scene = load(scene_path)
 	load_scene()
+	
+func first_wave():
+	wave_time = rand_range(min_wave_time, max_wave_time)
+	var wave_size = 1
+	var rails = $Scene/Rails.lanes.duplicate()
+	var num_rails = len(rails)
+	while wave_size + len(rails) > num_rails:
+		if len(rails) == 0:
+			return
+		var rail = rails[randi() % len(rails)]
+		rails.erase(rail)
+		var car = cop_car_scene.instance()
+		car.can_shoot = false
+		#car.emit_signal('set_pos', Vector2(1100, rail.y))
+		car.position.x = 1100 + randf() * 200
+		car.position.y = rail.y
+		car.scale *= 0.5
+		$Scene.add_child(car)
+		cop_cars.append(car)
 
 func wave():
 	wave_time = rand_range(min_wave_time, max_wave_time)
@@ -50,7 +70,8 @@ func load_scene():
 		$Scene.add_child(chunk)
 		chunks.append(chunk)
 	$Scene/HealthChunk.visible = false
-	wave()
+	player = $Scene/Player
+	first_wave()
 
 func reload_scene():
 	cop_cars.clear()
@@ -61,15 +82,15 @@ func reload_scene():
 func _process(_delta):
 	if Input.is_action_just_pressed("reset"):
 		reload_scene()
-	if $Scene/Player == null:
+	if player == null:
 		return
+	$Scene/RichTextLabel.text = 'Cop Cars Destroyed: ' + str(cars_destroyed)
 	for i in range(len(chunks)):
 		chunks[i].visible = i < $Scene/Player.health
 	for i in range(len(cop_cars)):
 		if not cop_cars[i]:
 			cop_cars.erase(cop_cars[i])
 			cars_destroyed += 1
-			$Scene/RichTextLabel.text = 'Cop Cars Destroyed: ' + str(cars_destroyed)
 			break
 	if len(cop_cars) == 0:
 		wave()

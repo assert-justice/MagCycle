@@ -8,6 +8,7 @@ export var wiggle_distance = 30
 export var wiggle_speed = 1000
 export var health = 1
 export var alive = true
+export var can_shoot = true
 var wiggle_clock = -1
 var velocity = Vector2()
 var bullet_path = 'res://BadBullet.tscn'
@@ -44,7 +45,7 @@ func _physics_process(delta):
 	velocity.x += dx
 	velocity.x = clamp(velocity.x, -speed, speed) * delta
 	self.position.x += velocity.x
-	if fire_clock < 0:
+	if fire_clock < 0 and can_shoot:
 		fire_clock = fire_time
 		var bullet = bullet_scene.instance()
 		self.get_parent().add_child(bullet)

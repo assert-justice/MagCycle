@@ -59,19 +59,20 @@ func handle_movement(delta):
 	rails = get_tree().get_nodes_in_group("Rails")[0].rails
 	
 	velocity.y += gravity_power
-	var rail_dis = INF
+	var rail_dis = 10000
+	var closest_rail = null
+	if rails == null:
+		rails = get_tree().get_nodes_in_group("Rails")[0].rails
+	for rail in rails:
+		var dis = abs(self.position.y - rail.y)
+		if dis < rail_dis:
+			rail_dis = dis
+			closest_rail = rail
 	if (not Input.is_action_pressed("fall")) and (not velocity.y < 0):
-		if rails == null:
-			rails = get_tree().get_nodes_in_group("Rails")[0].rails
-		for rail in rails:
-			var dis = abs(self.position.y - rail.y)
-			if dis < rail_dis:
-				rail_dis = dis
-			if dis < clamp_distance:
-				self.position.y = rail.y
-				velocity.y = 0
-				break
-	if Input.is_action_just_pressed("jump") and (len(jumpable) > 0 or rail_dis < 50):
+		if rail_dis < clamp_distance:
+			self.position.y = closest_rail.y
+			velocity.y = 0
+	if Input.is_action_just_pressed("jump") and (len(jumpable) > 0 or rail_dis < 100):
 		velocity.y -= jump_power
 		if velocity.y > -jump_power:
 			velocity.y = -jump_power
